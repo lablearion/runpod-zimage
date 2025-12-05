@@ -133,14 +133,31 @@ RUN if [ "$MODEL_TYPE" = "flux1-dev-fp8" ]; then \
       wget -q -O models/checkpoints/flux1-dev-fp8.safetensors https://huggingface.co/Comfy-Org/flux1-dev/resolve/main/flux1-dev-fp8.safetensors; \
     fi
 
+# Create directories for z-image models
 RUN if [ "$MODEL_TYPE" = "zimage-turbo" ]; then \
-      mkdir -p models/text_encoders models/diffusion_models models/loras && \
+      mkdir -p models/text_encoders models/diffusion_models models/loras models/vae; \
+    fi
+
+# Download qwen text encoder (~8GB) - separate layer for efficient caching
+RUN if [ "$MODEL_TYPE" = "zimage-turbo" ]; then \
       wget -q -O models/text_encoders/qwen_3_4b.safetensors \
-        https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors && \
-      wget -q -O models/vae/ae.safetensors \
-        https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors && \
+        https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/text_encoders/qwen_3_4b.safetensors; \
+    fi
+
+# Download diffusion model (~12.3GB) - separate layer for efficient caching
+RUN if [ "$MODEL_TYPE" = "zimage-turbo" ]; then \
       wget -q -O models/diffusion_models/z_image_turbo_bf16.safetensors \
-        https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors && \
+        https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/diffusion_models/z_image_turbo_bf16.safetensors; \
+    fi
+
+# Download VAE (~100MB) - separate layer for efficient caching
+RUN if [ "$MODEL_TYPE" = "zimage-turbo" ]; then \
+      wget -q -O models/vae/ae.safetensors \
+        https://huggingface.co/Comfy-Org/z_image_turbo/resolve/main/split_files/vae/ae.safetensors; \
+    fi
+
+# Download pixel art LoRA (~100MB) - separate layer for efficient caching
+RUN if [ "$MODEL_TYPE" = "zimage-turbo" ]; then \
       wget -q -O models/loras/pixel_art_style_z_image_turbo.safetensors \
         https://huggingface.co/tarn59/pixel_art_style_lora_z_image_turbo/resolve/main/pixel_art_style_z_image_turbo.safetensors; \
     fi
